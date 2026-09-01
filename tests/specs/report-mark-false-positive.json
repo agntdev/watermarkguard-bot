@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Mark false positive",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Admin marks a report as a false positive"
+            }
+          }
+        ],
+        "send": {
+          "callback": "report:mark_false_positive"
+        }
+      }
+    ]
+  }
+]
