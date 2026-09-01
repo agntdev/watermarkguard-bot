@@ -1,17 +1,19 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { requireOwner } from "../toolkit/index.js";
+import { setReportStatus } from "../watermark-data.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Mark false positive", data: "report:mark_false_positive" }) if the toolkit exposes it.
-
-const composer = new Composer();
-
-composer.callbackQuery("report:mark_false_positive", async (ctx) => {
+const composer = new Composer<Ctx>();
+const durableCtx = (ctx: object) => ctx as { env?: Record<string, unknown> };
+composer.callbackQuery(/^report:(?:false|mark_false_positive)(?::[a-z0-9-]+)?$/, async (ctx) => {
   await ctx.answerCallbackQuery();
-  await ctx.reply("Admin marks a report as a false positive");
+  if (!(await requireOwner(ctx))) return;
+  const id = ctx.callbackQuery.data.split(":")[2];
+  if (!id) { await ctx.reply("Open a report first, then mark it as a false positive."); return; }
+  const updated = await setReportStatus(durableCtx(ctx), id, "false_positive");
+  if (updated === undefined) { await ctx.reply("Report storage isn’t set up yet."); return; }
+  if (!updated) { await ctx.reply("That report is no longer available."); return; }
+  await ctx.editMessageText("Report marked as a false positive.");
 });
 
 export default composer;

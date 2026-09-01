@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Request a list of recent flagged reports with pagination"
+              "text": "Owner access isn't set up yet."
             }
           }
         ],

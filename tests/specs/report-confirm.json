@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Admin confirms a report as valid"
+              "text": "Owner access isn't set up yet."
             }
           }
         ],
